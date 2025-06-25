@@ -7,13 +7,17 @@ import CartItem from './CartItem';
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false);
-    const [addedToCart, setAddedToCart] = useState({});
     const dispatch = useDispatch();
     
     // Get cart items and total count from Redux store
     const cart = useSelector(state => state.cart.items);
     const getTotalItemCount = () => {
         return cart.reduce((total, item) => total + item.quantity, 0);
+    };
+
+    // Check if item is in cart based on Redux state
+    const isItemInCart = (plantName) => {
+        return cart.some(item => item.name === plantName);
     };
 
     const plantsArray = [
@@ -250,10 +254,6 @@ function ProductList({ onHomeClick }) {
     // Handle Add to Cart functionality
     const handleAddToCart = (plant) => {
         dispatch(addItem(plant));
-        setAddedToCart(prev => ({
-            ...prev,
-            [plant.name]: true
-        }));
     };
 
     const handleHomeClick = (e) => {
@@ -341,11 +341,11 @@ function ProductList({ onHomeClick }) {
                                             <p className="plant-description">{plant.description}</p>
                                             <p className="plant-cost">{plant.cost}</p>
                                             <button 
-                                                className={`add-to-cart-btn ${addedToCart[plant.name] ? 'added' : ''}`}
+                                                className={`add-to-cart-btn ${isItemInCart(plant.name) ? 'added' : ''}`}
                                                 onClick={() => handleAddToCart(plant)}
-                                                disabled={addedToCart[plant.name]}
+                                                disabled={isItemInCart(plant.name)}
                                             >
-                                                {addedToCart[plant.name] ? 'Added to Cart' : 'Add to Cart'}
+                                                {isItemInCart(plant.name) ? 'Added to Cart' : 'Add to Cart'}
                                             </button>
                                         </div>
                                     </div>
